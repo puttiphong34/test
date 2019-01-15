@@ -29,7 +29,14 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
         // Do any additional setup after loading the view.
     }
     
-
+    @IBAction func openlb(_ sender: Any) {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = UIImagePickerController.SourceType.photoLibrary
+        imagePicker.allowsEditing = true
+        
+        self.present(imagePicker, animated: true, completion: nil)    }
+    
     @IBAction func cameraBtn(_ sender: Any) {
         let imagePicker = UIImagePickerController()
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -50,6 +57,8 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
 
         img.image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
         self.dismiss(animated: true, completion: nil)
+        
+        
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
@@ -76,8 +85,5 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                             self.present(alert,animated: true,completion: nil)                         
                         }
                     }
-        guard  let image = img.image else { return }
-        let uploadTask = imageRef.putData(image, metadata: nil)
-        
     }
 }
