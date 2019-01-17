@@ -17,15 +17,24 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
     @IBOutlet weak var age: UITextField!
     @IBOutlet weak var name: UITextField!
     
-    var imageRef: StorageReference{
-        return Storage.storage().reference().child("images")
-    }
+//    var imageRef: StorageReference{
+//        return Storage.storage().reference().child("images")
+//    }
+//    func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
+//        // 1
+//        guard let imageData = UIImageJPEGRepresentation(image, 0.1) else {
+//            return completion(nil)
+//        }
+//    }
+//
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
         img.layer.cornerRadius = img.frame.size.width / 2
         img.layer.masksToBounds = true
+        
+        var ref = Database.database().reference()
         // Do any additional setup after loading the view.
     }
     
@@ -53,25 +62,73 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
 
     }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
 
-        img.image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        {
+            img.image = image
+            
+        }else{
+            //error
+            print("error")
+        }
+        
         self.dismiss(animated: true, completion: nil)
+//        img.image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+//        self.dismiss(animated: true, completion: nil)
         
-        
-    }
+}
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
 
     }
+//    func uploadMedia(completion: @escaping (_ url: String?) -> Void) {
+//        let storageRef = Storage.storage().reference().child("myImage.png")
+//        if let uploadData = self.img.image!.pngData() {
+//            storageRef.putData(uploadData, metadata: nil) { (metadata, error) in
+//                if error != nil {
+//                    print("error")
+//                    completion(nil)
+//                } else {
+//                
+//                    completion((metadata?.downloadURL()?.absoluteString)!);)
+//                    // your uploaded photo url.
+//                }
+//            }
+//        }
+//    }
+    
+    
+   
     
     @IBAction func add(_ sender: Any) {
+        
+        let imageName = NSUUID().uuidString
+        let storageRef = Storage.storage().reference().child("\(imageName).png")
+        if let uploadData = self.img.image!.pngData(){
+            storageRef.putData(uploadData, metadata: nil, completion:
+                {
+                    (metadata, error) in
+                    if error != nil {
+                        print("error")
+                        return
+                    }
+//                    storageRef.downloadURL { (url, error) in
+//                        guard let downloadURL = url else {
+//                            // Uh-oh, an error occurred!
+//                            return
+//                        }
+//                    }
+//
+                    print(metadata)
+            })
+        }
         let data = name.text
         let db = Firestore.firestore()
+        
         db.collection("Promptnow").document(data!).setData(["dept": dept.text!,
                     "name": name.text!,
-                    "age": age.text!,
-                    "image": URL.self]){ err in
+                    "age": age.text!]){ err in
                         if let err = err {
                             print("Error writing document: \(err)")
                         } else {
@@ -80,6 +137,7 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                                 self.dept.text = ""
                                 self.name.text = ""
                                 self.age.text = ""
+                                self.img.image = nil
                             } )
                             alert.addAction(okButton)
                             self.present(alert,animated: true,completion: nil)                         
