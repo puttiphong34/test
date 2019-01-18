@@ -17,24 +17,11 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
     @IBOutlet weak var age: UITextField!
     @IBOutlet weak var name: UITextField!
     
-//    var imageRef: StorageReference{
-//        return Storage.storage().reference().child("images")
-//    }
-//    func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
-//        // 1
-//        guard let imageData = UIImageJPEGRepresentation(image, 0.1) else {
-//            return completion(nil)
-//        }
-//    }
-//
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         img.layer.cornerRadius = img.frame.size.width / 2
         img.layer.masksToBounds = true
         
-        var ref = Database.database().reference()
         // Do any additional setup after loading the view.
     }
     
@@ -98,35 +85,49 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
 //        }
 //    }
     
-    
-   
-    
-    @IBAction func add(_ sender: Any) {
-        
+    func uploadMedia() {
         let imageName = NSUUID().uuidString
-        let storageRef = Storage.storage().reference().child("\(imageName).png")
+        let storageRef = Storage.storage().reference().child("image.png").child("\(imageName).png")
         if let uploadData = self.img.image!.pngData(){
+
+            
             storageRef.putData(uploadData, metadata: nil, completion:
                 {
                     (metadata, error) in
+                    
                     if error != nil {
                         print("error")
                         return
                     }
-//                    storageRef.downloadURL { (url, error) in
-//                        guard let downloadURL = url else {
-//                            // Uh-oh, an error occurred!
-//                            return
-//                        }
-//                    }
-//
-                    print(metadata)
+                    
+                    storageRef.downloadURL { url, error in
+                        if let error = error {
+                            // Handle any errors
+                            if(error != nil){
+                                print(error)
+                                return
+                            }
+                        }else {
+                            // Get the download URL for 'images/stars.jpg'
+                    
+                            let urlStr:String = (url?.absoluteString) ?? ""
+                    }
+                        print(metadata)
+                        print(url)
+
+                }
             })
+            
         }
-        let data = name.text
-        let db = Firestore.firestore()
-        
-        db.collection("Promptnow").document(data!).setData(["dept": dept.text!,
+    }
+   
+    
+@IBAction func add(_ sender: Any) {
+    self.uploadMedia()
+    let data = name.text
+    let db = Firestore.firestore()
+
+    db.collection("Promptnow").document(data!).setData(["dept": dept.text!,
                     "name": name.text!,
                     "age": age.text!]){ err in
                         if let err = err {
@@ -138,7 +139,7 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                                 self.name.text = ""
                                 self.age.text = ""
                                 self.img.image = nil
-                            } )
+                            })
                             alert.addAction(okButton)
                             self.present(alert,animated: true,completion: nil)                         
                         }
