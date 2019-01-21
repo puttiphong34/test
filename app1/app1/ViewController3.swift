@@ -85,7 +85,7 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
 //        }
 //    }
     
-    func uploadMedia() {
+    func uploadMedia()  {
         let imageName = NSUUID().uuidString
         let storageRef = Storage.storage().reference().child("image.png").child("\(imageName).png")
         if let uploadData = self.img.image!.pngData(){
@@ -99,7 +99,7 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                         print("error")
                         return
                     }
-                    
+
                     storageRef.downloadURL { url, error in
                         if let error = error {
                             // Handle any errors
@@ -108,41 +108,45 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                                 return
                             }
                         }else {
-                            // Get the download URL for 'images/stars.jpg'
-                    
-                            let urlStr:String = (url?.absoluteString) ?? ""
+                            // Get the download URL
+                           
+                            let urlStr:String = (url?.absoluteString)!
+                            let data = self.name.text
+                            let db = Firestore.firestore()
+                            
+                            
+                            db.collection("Promptnow").document(data!).setData(
+                                ["dept": self.dept.text!,
+                                 "name": self.name.text!,
+                                 "age": self.age.text!,
+                                 "imageURL": urlStr]){ err in
+                                    if let err = err {
+                                        print("Error writing document: \(err)")
+                                } else {
+                                        let alert = UIAlertController(title: "เพิ่มข้อมูลสำเร็จ", message: nil, preferredStyle: .alert)
+                                        let okButton = UIAlertAction(title: "OK", style: .default, handler: { action in
+                                            self.dept.text = ""
+                                            self.name.text = ""
+                                            self.age.text = ""
+                                            self.img.image = nil })
+                                        alert.addAction(okButton)
+                                        self.present(alert,animated: true,completion: nil)
+                                                                                    }
+                            }
                     }
                         print(metadata)
                         print(url)
 
                 }
+                
             })
             
         }
     }
-   
     
-@IBAction func add(_ sender: Any) {
-    self.uploadMedia()
-    let data = name.text
-    let db = Firestore.firestore()
-
-    db.collection("Promptnow").document(data!).setData(["dept": dept.text!,
-                    "name": name.text!,
-                    "age": age.text!]){ err in
-                        if let err = err {
-                            print("Error writing document: \(err)")
-                        } else {
-                            let alert = UIAlertController(title: "เพิ่มข้อมูลสำเร็จ", message: nil, preferredStyle: .alert)
-                            let okButton = UIAlertAction(title: "OK", style: .default, handler: { action in
-                                self.dept.text = ""
-                                self.name.text = ""
-                                self.age.text = ""
-                                self.img.image = nil
-                            })
-                            alert.addAction(okButton)
-                            self.present(alert,animated: true,completion: nil)                         
-                        }
-                    }
+    
+    @IBAction func add(_ sender: Any) {
+        self.uploadMedia()
+ 
     }
 }
