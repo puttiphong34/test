@@ -8,72 +8,138 @@
 
 import UIKit
 import FirebaseFirestore
-struct callData {
-    var open = Bool()
-    var title = String()
-    var sectionData = [String]()
-}
-class ViewController2: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    var tableData = [callData]()
+import FirebaseStorage
+import FirebaseUI
+
+class ViewController2: UIViewController {
+
+    @IBOutlet weak var imageQR: UIImageView!
+    @IBOutlet weak var textfield: UITextField!
     
-    
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var imageInQR: UIImageView!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        let docRef = Firestore.firestore().collection("Promptnow").document("ing")
-        docRef.getDocument { (document, err) in
-            if let document = document {
-    
-                self.tableData = [callData(open: false, title: "Title1", sectionData: ["call", "call2", "call3"]),
-                     callData(open: false, title: "Title2", sectionData: ["call", "call2", "call3"]),
-                     callData(open: false, title: "Title3", sectionData: ["call", "call2", "call3"])]
+
+    }
+    func downloadImage(with url: URL) {
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if error != nil {
+               print(error!)
+                return
             }
-        }
-        // Do any additional setup after loading the view.
+            DispatchQueue.main.async {
+                self.imageInQR.image = UIImage(data: data!)
+            }
+        }.resume()
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return tableData.count
-    }
-            
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableData[section].open == true {
-            return tableData[section].sectionData.count + 1
-            
-        }else {
-            return 1
-        }
-    }
+    @IBAction func bt(_ sender: Any) {
+//        if let myString = textfield.text {
+//            let data = myString.data(using: .ascii, allowLossyConversion: false)
+//            let filter = CIFilter(name: "CIQRCodeGenerator")
+//            filter?.setValue(data, forKey: "inputMessage")
+//            filter?.setValue("H", forKey: "inputCorrectionLevel")
+//
+//            guard let qrcode = filter?.outputImage else { return }
+//            let scaleX = imageQR.frame.size.width / qrcode.extent.size.width
+//            let scaleY = imageQR.frame.size.height / qrcode.extent.size.height
+//
+//            let transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+//
+//            let output = filter?.outputImage?.transformed(by: transform)
+//
+//            let img = UIImage(ciImage: (output)! )
+//
+//            imageQR.image = img
+//        }
+        
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let dataIndex = indexPath.row - 1
-        if indexPath.row == 0 {
-             let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! UITableViewCell
-            cell.textLabel?.text = tableData[indexPath.section].title
-            return cell
-        }else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! UITableViewCell
-            cell.textLabel?.text = tableData[indexPath.section].sectionData[dataIndex]
 
-            return cell
-        }
-    }
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-            if tableData[indexPath.section].open == true {
-                tableData[indexPath.section].open = false
+        
+        if textfield.text != "" {
+            guard let datadb = textfield.text else {return}
+            let docRef = Firestore.firestore().collection("Promptnow").document(datadb)
             
+            let imageName = NSUUID().uuidString
+            var myImageView = UIImageView()
 
-                let sections = IndexSet.init(integer: indexPath.section)
-                tableView.reloadSections(sections, with: .none)
-            }else{
-                tableData[indexPath.section].open = true
-                let sections = IndexSet.init(integer: indexPath.section)
-                tableView.reloadSections(sections, with: .none)
+            
+            docRef.getDocument{ (document, err) in
+                if let document = document {
+                    if document.exists{
+                     //   let dbRef = Storage.storage().reference().child("image.png")
+
+                   //     self.downloadImage(with: self.imageurll!)
+
+//                        let myData = document.data()
+//                        if let profileURL = myData?["imageURL"] as? String {
+//                            let storageRef = Storage.storage().reference(forURL: profileURL)
+//                            let imageurll = URL(string: profileURL)
+//
+//                            self.downloadImage(with: imageurll!)
+//
+//                            //   myImageView?.sd_setImage(with: storageRef, placeholderImage: UIImage(named: "image.png"))
+//                         //   self.imageInQR.image = storageRef as? UIImage
+//                           print(storageRef)
+//                        }
+//                        else {
+//                            print("profileURL is nil")
+//                        }
+                        
+                        
+                        let imageurl = document.get("imageURL") as! String
+                        let imageurl2 = URL(string: imageurl)
+                        self.downloadImage(with: imageurl2!)
+
+                        let age = document.get("age") as! String
+                        let name = document.get("name") as! String
+                        let docID = document.documentID
+                    
+                        
+                        var data = name.data(using: .ascii, allowLossyConversion: false)
+                        
+                        let filter = CIFilter(name: "CIQRCodeGenerator")
+                        filter?.setValue(data, forKey: "inputMessage")
+                        filter?.setValue("M", forKey: "inputCorrectionLevel")
+                        guard let qrcode = filter?.outputImage else { return }
+                        let scaleX = self.imageQR.frame.size.width / qrcode.extent.size.width
+                        let scaleY = self.imageQR.frame.size.height / qrcode.extent.size.height
+                        
+                        let transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+                        
+                        let output = filter?.outputImage?.transformed(by: transform)
+                        
+                        let img = UIImage(ciImage: (output)! )
+                        
+                        self.imageQR.image = img
+
+                    }else {
+                        let alert = UIAlertController(title: "ไม่พบข้อมูลในการสร้าง", message: nil, preferredStyle: .alert)
+                        let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
+                        alert.addAction(okButton)
+                        self.present(alert,animated: true,completion: nil)
+                        
+                    }
+                    
+                }
+                
             }
-            
+            // end
+//            func downloadimage(withURL url:URL, completion: @escaping (_ image:UIImage?)->()) {
+//                let data = URLSession.shared.dataTask(with: url) { data, url, error in
+//                    var downloadtimage:UIImage?
+//
+//                    if let data = data {
+//                        downloadtimage = UIImage(data: data)
+//                    }
+//                    DispatchQueue.main.async {
+//                         completion(downloadtimage)
+//
+//                    }
+//                }
+//                data.resume()
+//
+//            }
         }
     }
-
 }

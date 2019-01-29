@@ -12,21 +12,23 @@ import FirebaseFirestore
 
 class Tab4Data {
     var title: String = ""
+    var id: String = ""
     var age: String = ""
     var dept: String = ""
     
     var isExpand: Bool = false
     
-    init(title: String, age: String, dept: String, isExpand: Bool) {
+    init(title: String, age: String, dept: String, id: String, isExpand: Bool) {
         self.title = title
         self.age = age
         self.dept = dept
+        self.id = id
         self.isExpand = isExpand
     }
 }
 
 class ViewController4: UIViewController, DidTapHeader {
-
+    
     @IBOutlet weak var tableView: UITableView!
     
     var defaultStore : Firestore?
@@ -36,10 +38,16 @@ class ViewController4: UIViewController, DidTapHeader {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         self.readData()
     }
     
     func readData() {
+        self.data.removeAll()
+        
         defaultStore = Firestore.firestore()
         defaultStore?.collection("Promptnow").getDocuments { (snapshot, err) in
             if let err = err {
@@ -50,8 +58,9 @@ class ViewController4: UIViewController, DidTapHeader {
                     let name = document.get("name") as! String
                     let age = document.get("age") as! String
                     let dept = document.get("dept") as! String
+                    let id = document.get("id") as! String
                     print(name, age, dept)
-                    let tempData = Tab4Data(title: name, age: age, dept: dept, isExpand: false)
+                    let tempData = Tab4Data(title: name, age: age, dept: dept, id: id, isExpand: false)
                     self.data.append(tempData)
                 }
                 self.tableView.delegate = self
@@ -74,7 +83,7 @@ extension ViewController4: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.data[section].isExpand {
-            return 2
+            return 3
         }
         return 0
     }
@@ -83,8 +92,10 @@ extension ViewController4: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! UITableViewCell
         if indexPath.row == 0 {
             cell.textLabel?.text = self.data[indexPath.section].age
-        }else {
+        }else if indexPath.row == 1 {
             cell.textLabel?.text = self.data[indexPath.section].dept
+        }else {
+            cell.textLabel?.text = self.data[indexPath.section].id
         }
         return cell
     }

@@ -16,6 +16,7 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
     @IBOutlet weak var dept: UITextField!
     @IBOutlet weak var age: UITextField!
     @IBOutlet weak var name: UITextField!
+    @IBOutlet weak var id: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,7 +91,6 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
         let storageRef = Storage.storage().reference().child("image.png").child("\(imageName).png")
         if let uploadData = self.img.image!.pngData(){
 
-            
             storageRef.putData(uploadData, metadata: nil, completion:
                 {
                     (metadata, error) in
@@ -111,12 +111,13 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                             // Get the download URL
                            
                             let urlStr:String = (url?.absoluteString)!
-                            let data = self.name.text
+                            let id = self.id.text
                             let db = Firestore.firestore()
                             
                             
-                            db.collection("Promptnow").document(data!).setData(
+                            db.collection("Promptnow").document(id!).setData(
                                 ["dept": self.dept.text!,
+                                 "id": self.id.text!,
                                  "name": self.name.text!,
                                  "age": self.age.text!,
                                  "imageURL": urlStr]){ err in
@@ -125,6 +126,7 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                                 } else {
                                         let alert = UIAlertController(title: "เพิ่มข้อมูลสำเร็จ", message: nil, preferredStyle: .alert)
                                         let okButton = UIAlertAction(title: "OK", style: .default, handler: { action in
+                                            self.id.text = ""
                                             self.dept.text = ""
                                             self.name.text = ""
                                             self.age.text = ""

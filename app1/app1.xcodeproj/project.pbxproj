@@ -158,9 +158,8 @@
 				E001BE4721E4688000C3F145 /* Main.storyboard */,
 				E001BE7B21E48F1D00C3F145 /* dataCollectionViewCell.swift */,
 				E001BE7121E468F400C3F145 /* ViewController2.swift */,
-				E001BE7321E4690700C3F145 /* ViewController3.swift */,
-				E001BE7521E4691400C3F145 /* ViewController4.swift */,
-				E0FAB63621EC9E5B00295D7E /* HeaderCell.swift */,
+				E03CDC4D21FEBFCC00E569DE /* AddDataToFirebase */,
+				E03CDC4E21FEC22900E569DE /* Showdata */,
 				E001BE4A21E4688100C3F145 /* Assets.xcassets */,
 				E001BE4C21E4688100C3F145 /* LaunchScreen.storyboard */,
 				E001BE4F21E4688100C3F145 /* Info.plist */,
@@ -184,6 +183,23 @@
 				E001BE6521E4688100C3F145 /* Info.plist */,
 			);
 			path = app1UITests;
+			sourceTree = "<group>";
+		};
+		E03CDC4D21FEBFCC00E569DE /* AddDataToFirebase */ = {
+			isa = PBXGroup;
+			children = (
+				E001BE7321E4690700C3F145 /* ViewController3.swift */,
+			);
+			path = AddDataToFirebase;
+			sourceTree = "<group>";
+		};
+		E03CDC4E21FEC22900E569DE /* Showdata */ = {
+			isa = PBXGroup;
+			children = (
+				E0FAB63621EC9E5B00295D7E /* HeaderCell.swift */,
+				E001BE7521E4691400C3F145 /* ViewController4.swift */,
+			);
+			path = Showdata;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -354,6 +370,7 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -367,6 +384,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
