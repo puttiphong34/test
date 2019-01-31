@@ -9,7 +9,6 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseStorage
-import FirebaseUI
 
 class ViewController2: UIViewController {
 
@@ -34,59 +33,20 @@ class ViewController2: UIViewController {
     }
     
     @IBAction func bt(_ sender: Any) {
-//        if let myString = textfield.text {
-//            let data = myString.data(using: .ascii, allowLossyConversion: false)
-//            let filter = CIFilter(name: "CIQRCodeGenerator")
-//            filter?.setValue(data, forKey: "inputMessage")
-//            filter?.setValue("H", forKey: "inputCorrectionLevel")
-//
-//            guard let qrcode = filter?.outputImage else { return }
-//            let scaleX = imageQR.frame.size.width / qrcode.extent.size.width
-//            let scaleY = imageQR.frame.size.height / qrcode.extent.size.height
-//
-//            let transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-//
-//            let output = filter?.outputImage?.transformed(by: transform)
-//
-//            let img = UIImage(ciImage: (output)! )
-//
-//            imageQR.image = img
-//        }
-        
 
-
+    
         
         if textfield.text != "" {
             guard let datadb = textfield.text else {return}
             let docRef = Firestore.firestore().collection("Promptnow").document(datadb)
             
-            let imageName = NSUUID().uuidString
-            var myImageView = UIImageView()
+           // let imageName = NSUUID().uuidString
 
             
             docRef.getDocument{ (document, err) in
                 if let document = document {
                     if document.exists{
-                     //   let dbRef = Storage.storage().reference().child("image.png")
-
-                   //     self.downloadImage(with: self.imageurll!)
-
-//                        let myData = document.data()
-//                        if let profileURL = myData?["imageURL"] as? String {
-//                            let storageRef = Storage.storage().reference(forURL: profileURL)
-//                            let imageurll = URL(string: profileURL)
-//
-//                            self.downloadImage(with: imageurll!)
-//
-//                            //   myImageView?.sd_setImage(with: storageRef, placeholderImage: UIImage(named: "image.png"))
-//                         //   self.imageInQR.image = storageRef as? UIImage
-//                           print(storageRef)
-//                        }
-//                        else {
-//                            print("profileURL is nil")
-//                        }
-                        
-                        
+                   
                         let imageurl = document.get("imageURL") as! String
                         let imageurl2 = URL(string: imageurl)
                         self.downloadImage(with: imageurl2!)
@@ -94,9 +54,14 @@ class ViewController2: UIViewController {
                         let age = document.get("age") as! String
                         let name = document.get("name") as! String
                         let docID = document.documentID
-                    
+                        let dept = document.get("dept") as! String
                         
-                        var data = name.data(using: .ascii, allowLossyConversion: false)
+                        let qrcodedata = ("ID:\(docID)\t\t |Depatment:\(dept)\t\t |Name:\(name)\t\t |Age:\(age)")
+                        
+                        let docRef2 = Firestore.firestore()
+                        docRef2.collection("Promptnow").document(docID).updateData(["qrcode": qrcodedata])
+                        
+                        var data = qrcodedata.data(using: .ascii, allowLossyConversion: false)
                         
                         let filter = CIFilter(name: "CIQRCodeGenerator")
                         filter?.setValue(data, forKey: "inputMessage")

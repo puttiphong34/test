@@ -120,7 +120,8 @@ class ViewController3: UIViewController,UIImagePickerControllerDelegate,UINaviga
                                  "id": self.id.text!,
                                  "name": self.name.text!,
                                  "age": self.age.text!,
-                                 "imageURL": urlStr]){ err in
+                                 "imageURL": urlStr,
+                                 "qrcode": ""]){ err in
                                     if let err = err {
                                         print("Error writing document: \(err)")
                                 } else {
